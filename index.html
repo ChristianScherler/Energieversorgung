@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Anhörung Stromerzeugung</title>
+<style>
+/* VOICE: sachlich, parlamentarisch, ruhig – ein Arbeitsraum für Schüler
+   IDEA: Sitzungssaal mit Namensschildern und stenografischem Wortprotokoll
+   PICTURE: Bank der Sachverständigen als Tischschilder, daneben das laufende Protokoll
+   COLOUR and TYPE: Plenarblau als Feld, weißes Papier, Signalrot für Hinweise; Systemschriften (keine externen Dienste)
+   LAYOUT: blaues Kopfband, darunter Bank links, Befragung rechts; unter 860px gestapelt */
+:root{color-scheme:light dark;
+--bg:light-dark(#f3f5fa,#0f1424);--paper:light-dark(#ffffff,#171e33);--ink:light-dark(#141a2b,#e8ecf6);
+--mute:light-dark(#5a6378,#9aa3ba);--line:light-dark(#dde2ee,#2a3350);--blue:#2f4fa2;--blue2:light-dark(#e6ebf7,#22305a);--red:#d8343d;
+--new:light-dark(#fff3d6,#3a3016);--g1:#7a6a58;--g2:#2f8a4e;--g3:#2f6fb8;--g4:#c0392b;--g5:#d9822b;--g6:#7b5ea7;
+--sans:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;--serif:Georgia,"Iowan Old Style","Times New Roman",serif}
+@supports not (color:light-dark(#000,#fff)){:root{--bg:#f3f5fa;--paper:#fff;--ink:#141a2b;--mute:#5a6378;--line:#dde2ee;--blue2:#e6ebf7;--new:#fff3d6}}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 var(--sans);overflow-x:clip}
+header{background:var(--blue);color:#fff;padding:clamp(24px,4vw,48px) max(5vw,16px) clamp(20px,3vw,36px)}
+header .k{font-size:14px;opacity:.85;margin:0 0 6px}
+h1{font-size:clamp(28px,4.4vw,46px);line-height:1.05;margin:0 0 12px;text-wrap:balance;font-weight:600;max-width:22ch}
+header p.l{margin:0 0 10px;max-width:70ch;opacity:.94}
+.note{font-size:13px;opacity:.8;margin:12px 0 0}
+main{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.5fr);gap:24px;padding:24px max(5vw,16px) 48px;max-width:1400px;margin:0 auto}
+@media(max-width:860px){main{grid-template-columns:minmax(0,1fr)}}
+h2{font-size:20px;margin:0 0 12px;font-weight:600}
+.grp{margin:0 0 18px}
+.grp h3{font-size:14px;font-weight:500;color:var(--mute);margin:0 0 8px;display:flex;align-items:center;gap:8px}
+.dot{width:10px;height:10px;border-radius:50%;flex:none}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}
+.card{font:inherit;color:inherit;text-align:left;cursor:pointer;background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:12px 14px 12px 16px;position:relative;min-height:84px;display:flex;align-items:center;gap:12px;box-shadow:0 2px 0 var(--line)}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;border-radius:6px 0 0 6px;background:var(--c)}
+.card .av{flex:none;width:52px;height:52px}.card .tx{display:flex;flex-direction:column}
+.card b{font-family:var(--serif);font-size:17px;font-weight:600;line-height:1.2}
+.card span{font-size:13px;color:var(--mute);line-height:1.3;margin-top:3px;hyphens:auto;-webkit-hyphens:auto;overflow-wrap:anywhere}
+.card .n{position:absolute;right:8px;bottom:6px;font-size:12px;color:var(--mute);font-style:normal}
+.card:hover{border-color:var(--blue)}
+.card[aria-pressed=true]{background:var(--blue2);border-color:var(--blue)}
+button:focus-visible,textarea:focus-visible{outline:3px solid var(--red);outline-offset:2px}
+#hear{background:var(--paper);border:1px solid var(--line);border-radius:8px;display:flex;flex-direction:column}
+.who{padding:18px 20px 14px;border-bottom:1px solid var(--line);display:flex;gap:16px;align-items:center}
+.who .pic{flex:none;width:96px;height:96px}
+.who .role{font-size:13px;color:var(--mute);margin:0}
+.who h2{font-family:var(--serif);font-size:clamp(22px,2.6vw,28px);line-height:1.1;margin:4px 0 6px}
+.who p{margin:0;font-size:15px}.who .vb{font-size:13px;color:var(--mute);margin-top:6px}
+.qs{padding:14px 20px;border-bottom:1px solid var(--line)}
+.qs h3{font-size:14px;font-weight:600;margin:0 0 4px}
+.qs .hint{font-size:13px;color:var(--mute);margin:0 0 10px}
+.qlist{display:flex;flex-direction:column;gap:8px}
+.q{font:inherit;font-size:15px;text-align:left;border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:6px;padding:10px 12px;cursor:pointer;min-height:44px;display:flex;gap:10px;align-items:flex-start}
+.q:hover{border-color:var(--blue)}
+.q .m{flex:none;width:20px;text-align:center;color:var(--blue);font-weight:700}
+.q.done{color:var(--mute)}.q.done .m{color:var(--g2)}
+.q.fresh{background:var(--new);border-color:#e0b44a}
+.q .tag{font-size:12px;font-weight:600;color:#9a6a00;display:block}
+.q.st{background:var(--blue);border-color:var(--blue);color:#fff}.q.st .m{color:#fff}.q.st.done{opacity:.75}
+#log{padding:16px 20px;font-family:var(--serif);font-size:17px;line-height:1.55;min-height:200px}
+.empty{color:var(--mute);font-family:var(--sans);font-size:15px;margin:0}
+.turn{margin:0 0 16px}
+.turn .sp{font-family:var(--sans);font-size:13px;font-weight:600;display:block;margin-bottom:2px}
+.turn.q1 .sp{color:var(--blue)}.turn.q1 p{margin:0;font-style:italic}
+.turn.a{display:flex;gap:10px;align-items:flex-start}.mini{flex:none;width:36px;height:36px;margin-top:2px}
+.turn.a p{margin:0}
+.notes{padding:0 20px 14px}
+.notes label{font-size:14px;font-weight:600;display:block;margin-bottom:6px}
+.notes textarea{width:100%;font:16px/1.4 var(--sans);min-height:70px;resize:vertical;padding:10px 12px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink)}
+.tools{display:flex;flex-wrap:wrap;gap:8px;padding:0 20px 16px;font-size:14px;align-items:center}
+.tools button{font:inherit;font-size:14px;background:none;border:1px solid var(--line);color:var(--ink);border-radius:6px;padding:8px 12px;min-height:44px;cursor:pointer}
+.tools button.pri{background:var(--blue);color:#fff;border-color:var(--blue)}
+.tools .st{color:var(--mute);margin-left:auto}
+svg{display:block}
+@media(max-width:600px){.cards{grid-template-columns:minmax(0,1fr)}.who .pic,.who .pic svg{width:72px;height:72px}#log{font-size:16px}}
+@media(prefers-reduced-motion:no-preference){.turn{animation:in .25s ease-out}@keyframes in{from{opacity:0;transform:translateY(4px)}}}
+@media print{header,#groups,.qs,.tools,.notes{display:none}main{display:block}#hear{border:0}}
+</style>
+</head>
+<body>
+<header>
+  <p class="k">Ausschuss für Wirtschaft und Energie · Öffentliche Anhörung · Simulation für den Unterricht</p>
+  <h1>Wie erzeugen wir künftig unseren Strom?</h1>
+  <p class="l">Ihr seid Abgeordnete. Wählt eine Sachverständige oder einen Sachverständigen aus, hört das Eingangsstatement und stellt eure Fragen. Manche Antworten machen eine Nachfrage möglich. Nur wer nachhakt, erfährt, was die Person nicht von selbst erzählt.</p>
+  <p class="l">Euer Rechercheauftrag: Findet heraus, was eine Kilowattstunde Strom aus den verschiedenen Kraftwerken kostet, wie viel CO2 dabei entsteht und welche Vor- und Nachteile jede Erzeugungsart hat. Nicht jede Person kennt diese Zahlen, und manche nennen nur die Zahlen, die ihnen nützen.</p>
+  <p class="note">Alle Personen und Verbände sind erfunden. Ihre Positionen sind vereinfacht und an reale Verbände angelehnt. Stand der politischen Lage: November 2026. Diese Seite lädt keine externen Inhalte und speichert euren Fortschritt nur in diesem Browser.</p>
+</header>
+<main>
+  <section aria-labelledby="bank">
+    <h2 id="bank">Die Sachverständigen</h2>
+    <div id="groups"></div>
+  </section>
+  <section id="hear">
+    <div class="who" id="who"></div>
+    <div class="qs">
+      <h3>Eure Fragen</h3>
+      <p class="hint" id="hint"></p>
+      <div class="qlist" id="qlist"></div>
+    </div>
+    <div id="log" aria-live="polite"></div>
+    <div class="notes">
+      <label for="note">Eigene Notizen und offene Fragen</label>
+      <textarea id="note" placeholder="Was ist euch aufgefallen? Welche Frage würdet ihr noch stellen?"></textarea>
+    </div>
+    <div class="tools">
+      <button type="button" class="pri" id="dl">Protokoll herunterladen</button>
+      <button type="button" id="copy">Protokoll kopieren</button>
+      <button type="button" id="all">Alle Protokolle herunterladen</button>
+      <button type="button" id="reset">Befragung neu beginnen</button>
+      <span class="st" id="st" role="status"></span>
+    </div>
+  </section>
+</main>
+<script>
+{
+const GROUPS={fos:["Fossile Energie","var(--g1)","#7a6a58"],ee:["Erneuerbare Energie","var(--g2)","#2f8a4e"],netz:["Netz und Versorgungssicherheit","var(--g3)","#2f6fb8"],gew:["Gewerkschaften","var(--g4)","#c0392b"],vb:["Verbraucher","var(--g5)","#d9822b"],wei:["Weitere Sachverständige","var(--g6)","#7b5ea7"]};
+const KAYA="Genaue Zahlen zu Kosten und CO2 pro Kilowattstunde habe ich nicht dabei. Dazu fragen Sie bitte Frau Prof. Kaya aus der Wissenschaft oder die Vertreter der jeweiligen Energieform.";
+/* q: id, f = Frage, a = Antwort, u = schaltet frei, l = Nachfrage (gesperrt bis freigeschaltet) */
+const E=[
+{id:"kohle",g:"fos",name:"Thomas Brenner",title:"Hauptgeschäftsführer",org:"Verband der Braunkohle- und Kraftwerkswirtschaft",vb:"DEBRIV, LEAG, RWE",
+face:{s:"#efc9ad",h:"#9b9b9b",st:"short",must:1,age:1,c:"#4a4f5a",tie:"#7a6a58"},
+st:"Sehr geehrte Damen und Herren Abgeordnete, ich spreche für die Unternehmen und Beschäftigten der Braunkohle in der Lausitz und im Rheinischen Revier. Unsere Kraftwerke liefern Strom, wenn der Wind nicht weht und die Sonne nicht scheint, also auch in der Dunkelflaute im Winter. Die neuen Gaskraftwerke, die uns ersetzen sollen, werden frühestens um 2031 fertig. Bis dahin darf keine Versorgungslücke entstehen. Wir fordern deshalb: keinen vorgezogenen Kohleausstieg, solange der Ersatz nicht steht, Kohleblöcke als Reserve bereithalten statt sie zu verschrotten, und verlässliche Hilfen für den Strukturwandel in unseren Regionen. Klimaschutz ja, aber nicht auf Kosten der Versorgungssicherheit.",
+q:[
+{id:"k1",f:"Was kostet eine Kilowattstunde Kohlestrom?",a:"Nach der Studie des Fraunhofer ISE von 2024 hätte ein neu gebautes Braunkohlekraftwerk Kosten von 15,1 bis 25,7 Cent pro Kilowattstunde, ein Steinkohlekraftwerk 17,3 bis 29,3 Cent. Aber ehrlich gesagt: Neue Kohlekraftwerke baut niemand mehr. Unsere bestehenden Anlagen sind längst abgeschrieben. Teuer macht die Kohle vor allem der CO2-Preis, und der ist politisch gewollt.",u:["k1a"]},
+{id:"k1a",l:1,f:"Und wie viel CO2 entsteht dabei pro Kilowattstunde?",a:"Nun, das ist richtig: Braunkohle hat den höchsten Wert aller Kraftwerke, etwa 1.000 bis 1.100 Gramm CO2 pro Kilowattstunde, Steinkohle etwa 850 bis 900 Gramm. Wir bezahlen dafür aber im europäischen Emissionshandel. Und die Emissionen sinken ja ohnehin, weil jedes Jahr Blöcke vom Netz gehen.",u:["k1b"]},
+{id:"k1b",l:1,f:"Das Umweltbundesamt schätzt die Umweltkosten von Braunkohlestrom auf rund 40 Cent pro Kilowattstunde. Wer bezahlt die?",a:"Solche Berechnungen hängen stark davon ab, wie hoch man den Schaden pro Tonne CO2 ansetzt. Aber ja, Klimaschäden trägt am Ende die Allgemeinheit, nicht der Stromkunde direkt. Ich gebe nur zu bedenken: Ein Stromausfall hätte auch enorme Kosten.",u:[]},
+{id:"k2",f:"Wie schnell kann ein Kohlekraftwerk auf Schwankungen reagieren?",a:"Moderne Kohleblöcke sind viel flexibler als früher. Sie können ihre Leistung im laufenden Betrieb deutlich herunter- und wieder hochfahren. So gleichen wir schon heute einen Teil der Schwankungen von Wind und Sonne aus.",u:["k2a"]},
+{id:"k2a",l:1,f:"Und wie lange dauert es, ein abgeschaltetes Kohlekraftwerk wieder hochzufahren?",a:"Das dauert länger, das gebe ich zu. Ein Kaltstart braucht bei Steinkohle etwa 1 bis 10 Stunden, bei Braunkohle eher noch länger. Außerdem kann man ein Kohlekraftwerk nicht beliebig weit herunterregeln, es gibt eine Mindestlast. Kohlekraftwerke sind für den Dauerbetrieb gebaut. Für schnelle Wechsel sind Gaskraftwerke besser geeignet.",u:[]},
+{id:"k3",f:"Wie viele Arbeitsplätze hängen an der Kohle?",a:"Allein im Rheinischen Revier soll die Zahl der Beschäftigten in der Braunkohle bis 2030 von rund 6.000 auf etwa 2.000 sinken. Dazu kommen viele Arbeitsplätze bei Zulieferern, Handwerk und Dienstleistern in der Region. Für viele Orte ist die Kohle der größte Arbeitgeber.",u:["k3a"]},
+{id:"k3a",l:1,f:"Gehen viele dieser Beschäftigten nicht ohnehin bald in Rente?",a:"Ein Teil ja, viele unserer Beschäftigten sind älter und gehen bis 2030 oder 2038 in den Ruhestand. Aber wir haben auch junge Leute in Ausbildung, und es geht um die Zukunft ganzer Regionen.",u:[]},
+{id:"k4",f:"Setzt Ihr Unternehmen nur auf Kohle?",a:"Nein, natürlich nicht. Die Unternehmen, die ich vertrete, bauen inzwischen selbst Gaskraftwerke, Solarparks und Windräder. Wir verstehen uns als Teil der Energiewende. Gerade deshalb wollen wir einen Übergang, der planbar ist.",u:[]},
+{id:"k5",f:"Wie wollen Sie die Klimaziele erreichen, wenn Kohlekraftwerke länger laufen?",a:"Kraftwerke in der Reserve laufen nur im Notfall, also wenige Stunden im Jahr. Außerdem begrenzt der europäische Emissionshandel die Gesamtmenge an CO2. Wir wollen Klimaschutz, aber ohne Blackouts.",u:[]}]},
+{id:"gas",g:"fos",name:"Dr. Sabine Hartwig",title:"Vorstand",org:"Initiative Gaskraft und Wasserstoff",vb:"Zukunft Gas sowie Kraftwerksbetreiber",
+face:{s:"#f3d2b8",h:"#d6ad62",st:"bob",gl:1,c:"#2f3b52"},
+st:"Sehr geehrte Abgeordnete, je mehr Strom aus Wind und Sonne kommt, desto wichtiger werden Kraftwerke, die schnell einspringen können. Genau das leisten Gaskraftwerke. Die erste Ausschreibung im November 2026 hat gezeigt, wie groß die Bereitschaft der Unternehmen ist, neue Kraftwerke zu bauen. Alle neuen Anlagen müssen später auf Wasserstoff umgestellt werden können. Wir fordern: weitere Ausschreibungen zügig und verlässlich, einen dauerhaften Markt, der das Bereithalten von Kraftwerken bezahlt, und den Umbau der Gasnetze für Wasserstoff.",
+q:[
+{id:"g1",f:"Was kostet Strom aus einem Gaskraftwerk?",a:"Ein modernes Gas-und-Dampf-Kraftwerk, das viele Stunden im Jahr läuft, liefert Strom laut Fraunhofer ISE für 10,9 bis 18,1 Cent pro Kilowattstunde. Das ist günstiger als jedes neue Kohlekraftwerk.",u:["g1a"]},
+{id:"g1a",l:1,f:"Und eine Gasturbine, die nur als Reserve läuft?",a:"Die ist pro Kilowattstunde teurer, etwa 15,4 bis 32,6 Cent, weil sich die Baukosten auf wenige Betriebsstunden verteilen. Man muss das wie eine Versicherung sehen: Sie zahlen dafür, dass im Notfall Strom da ist.",u:["g1b"]},
+{id:"g1b",l:1,f:"Wer bezahlt diese Reservekraftwerke?",a:"Ehrlich gesagt: Ohne staatliche Unterstützung würde niemand ein Kraftwerk bauen, das nur wenige hundert Stunden im Jahr läuft. Die Kosten der Ausschreibungen werden am Ende über den Strompreis oder den Bundeshaushalt bezahlt, also von Stromkunden und Steuerzahlern.",u:[]},
+{id:"g2",f:"Wie schnell ist ein Gaskraftwerk am Netz?",a:"Eine Gasturbine ist in etwa 10 bis 20 Minuten am Netz, ein Gas-und-Dampf-Kraftwerk in etwa 30 bis 60 Minuten. Ein Kohlekraftwerk braucht dafür Stunden. Deshalb passen Gaskraftwerke so gut zu Wind und Sonne.",u:[]},
+{id:"g3",f:"Wie viel CO2 verursacht Strom aus Gas?",a:"Etwa 400 bis 460 Gramm CO2 pro Kilowattstunde, also ungefähr halb so viel wie Kohle. Und sobald die Kraftwerke mit grünem Wasserstoff laufen, sind sie nahezu klimaneutral.",u:["g3a"]},
+{id:"g3a",l:1,f:"Woher kommt der grüne Wasserstoff, und ab wann gibt es genug davon?",a:"Das ist die große offene Frage, das gebe ich zu. Grüner Wasserstoff ist heute knapp und teuer, und ein großer Teil muss importiert werden. Wann die Kraftwerke wirklich damit laufen, kann heute niemand genau sagen.",u:[]},
+{id:"g4",f:"Was passiert, wenn der Gaspreis wieder so stark steigt wie 2022?",a:"Das Risiko besteht. Deutschland bezieht heute viel Flüssiggas per Schiff aus verschiedenen Ländern und ist dadurch von Weltmarktpreisen abhängig. Reservekraftwerke laufen aber nur selten, deshalb wirkt sich der Gaspreis bei ihnen weniger stark aus.",u:[]},
+{id:"g5",f:"Warum sollen Batteriespeicher nicht gleichberechtigt an den Ausschreibungen teilnehmen?",a:"Batterien sind gut für ein paar Stunden. Eine Dunkelflaute kann aber mehrere Tage dauern. Deshalb mussten die Kraftwerke in der ersten Ausschreibung mindestens zehn Stunden am Stück laufen können. Das schaffen Batterien heute nicht.",u:[]}]},
+{id:"ee",g:"ee",name:"Jonas Albrecht",title:"Präsident",org:"Bundesverband Wind und Sonne",vb:"BEE, BWE, BSW-Solar",
+face:{s:"#e8b896",h:"#6b4a2e",st:"messy",beard:1,c:"#3d7a4f"},
+st:"Sehr geehrte Abgeordnete, Wind und Sonne liefern heute den günstigsten Strom, den man in Deutschland neu erzeugen kann. Sie machen uns unabhängig von Gas- und Kohleimporten und schaffen Arbeit gerade im ländlichen Raum. Umso unverständlicher ist es, dass die EEG-Reform neue kleine Dachsolaranlagen ab 2027 nicht mehr dauerhaft fördert und dass bei der ersten Kraftwerksausschreibung nur Gaskraftwerke zum Zug kamen. Wir fordern: die Ausbauziele beibehalten, Genehmigungen beschleunigen, mehr Flächen für Windräder ausweisen und verlässliche Bedingungen für Investitionen schaffen.",
+q:[
+{id:"e1",f:"Was kostet Strom aus Wind und Sonne?",a:"Laut Fraunhofer ISE kostet Strom aus neuen Solar-Freiflächenanlagen 4,1 bis 7,0 Cent pro Kilowattstunde, aus Windrädern an Land 4,3 bis 9,2 Cent, auf See 5,5 bis 10,3 Cent. Kleine Dachanlagen liegen bei 6,3 bis 14,4 Cent. Damit sind Freiflächen-Solar und Wind an Land die günstigsten neuen Kraftwerke überhaupt.",u:["e1a"]},
+{id:"e1a",l:1,f:"Sind in diesen Kosten auch Netze, Speicher und Reservekraftwerke enthalten?",a:"Nein, das ist richtig, die sind darin nicht enthalten. Ein Stromsystem mit viel Wind und Sonne braucht zusätzlich Leitungen, Speicher und Kraftwerke für windstille Zeiten. Aber ich erinnere daran: Auch die Klimaschäden der Kohle stecken nicht im Strompreis.",u:[]},
+{id:"e2",f:"Wie viel CO2 entsteht bei Strom aus Wind und Sonne?",a:"Im Betrieb gar keins. Rechnet man Herstellung, Transport und Entsorgung der Anlagen mit, sind es bei Solar etwa 30 bis 60 Gramm und bei Wind etwa 10 bis 20 Gramm pro Kilowattstunde. Bei Braunkohle sind es über 1.000 Gramm.",u:[]},
+{id:"e3",f:"Woher kommt der Strom bei einer Dunkelflaute im Winter?",a:"Aus einem Mix: Biogas, Wasserkraft, Stromimporte aus Nachbarländern, Speicher und ja, auch steuerbare Kraftwerke als Reserve. Wind und Sonne allein reichen in solchen Phasen nicht, das ist klar.",u:["e3a"]},
+{id:"e3a",l:1,f:"Wie oft laufen Windräder eigentlich mit voller Leistung?",a:"Umgerechnet laufen Windräder an Land etwa 1.800 bis 3.200 Stunden im Jahr mit voller Leistung, das Jahr hat 8.760 Stunden. Solaranlagen kommen auf noch weniger, nachts liefern sie gar nichts. Das ist in den Kosten aber schon eingerechnet.",u:[]},
+{id:"e4",f:"Warum werden Windräder manchmal abgeschaltet und trotzdem bezahlt?",a:"Wenn die Leitungen nicht ausreichen, um den Strom abzutransportieren, ordnen die Netzbetreiber eine Abregelung an. Die Betreiber werden dann gesetzlich entschädigt. Das ist ärgerlich und teuer, aber die Ursache sind fehlende Netze, nicht die Windräder.",u:[]},
+{id:"e5",f:"Was halten Sie von der EEG-Reform 2026?",a:"Wir halten sie für einen Fehler. Wenn neue kleine Dachanlagen ab 2027 keine dauerhafte Förderung mehr bekommen, lohnen sie sich für viele Hausbesitzer nicht mehr. Der Ausbau droht einzubrechen, gerade bei Bürgerinnen und Bürgern, die selbst Strom erzeugen wollen.",u:[]},
+{id:"e6",f:"Was sagen Sie Anwohnern, die keine Windräder in ihrer Nähe wollen?",a:"Ich nehme die Sorgen ernst. Die beste Antwort ist Beteiligung: Gemeinden und Anwohner sollen am Ertrag verdienen, etwa durch günstigeren Strom oder Anteile am Windpark. Wo Menschen profitieren, steigt die Zustimmung deutlich.",u:[]}]},
+{id:"speicher",g:"ee",name:"Dr. Mei Lin Schröder",title:"Geschäftsführerin",org:"Verband Energiespeicher und Wasserstoff",vb:"BVES, DWV",
+face:{s:"#eecba5",h:"#1d1a1a",st:"bun",c:"#3b5f7a"},
+st:"Sehr geehrte Abgeordnete, Speicher sind das fehlende Puzzlestück der Energiewende. Große Batteriespeicher werden rasant günstiger und lassen sich in wenigen Monaten bauen. Trotzdem waren sie in der ersten Kraftwerksausschreibung faktisch ausgeschlossen. Wir fordern: Speicher müssen gleichberechtigt mit Gaskraftwerken an allen Ausschreibungen teilnehmen können, sie dürfen nicht doppelt Netzentgelte zahlen, und der Aufbau von Anlagen für grünen Wasserstoff muss gefördert werden.",
+q:[
+{id:"s1",f:"Was kostet Solarstrom mit Batteriespeicher?",a:"Laut Fraunhofer ISE kostet Strom aus einer Solaranlage mit Batteriespeicher 6,0 bis 22,5 Cent pro Kilowattstunde, je nach Größe. Große Anlagen liegen am unteren Ende und sind damit günstiger als neue Gas- oder Kohlekraftwerke.",u:[]},
+{id:"s2",f:"Wie schnell reagiert ein Batteriespeicher?",a:"In Sekundenbruchteilen, schneller als jedes Kraftwerk. Damit können Batterien die Netzfrequenz stabil halten. Außerdem verschieben sie Solarstrom vom Mittag in den Abend, wenn viele Menschen kochen und Licht brauchen.",u:["s2a"]},
+{id:"s2a",l:1,f:"Und wie lange kann eine Batterie Strom liefern?",a:"Die meisten großen Batteriespeicher liefern 1 bis 4 Stunden lang Strom. Eine Dunkelflaute über mehrere Tage können sie allein nicht überbrücken, das stimmt. Dafür braucht es Langzeitspeicher wie Wasserstoff.",u:["s2b"]},
+{id:"s2b",l:1,f:"Wie viel Energie geht bei der Speicherung mit Wasserstoff verloren?",a:"Viel, das muss man offen sagen. Auf dem Weg von Strom zu Wasserstoff und wieder zurück zu Strom gehen etwa 60 bis 70 Prozent der Energie verloren. Bei Batterien sind es nur etwa 10 bis 15 Prozent. Wasserstoff lohnt sich deshalb vor allem für Überschussstrom, der sonst abgeregelt würde.",u:[]},
+{id:"s3",f:"Verursachen Batteriespeicher CO2?",a:"Ein Speicher erzeugt selbst keinen Strom und kein CO2. Sein Fußabdruck hängt davon ab, mit welchem Strom er geladen wird, und von der Herstellung der Batterien. Mit Solar- und Windstrom geladen, ist er nahezu klimaneutral.",u:[]},
+{id:"s4",f:"Woher kommen die Rohstoffe und die Batteriezellen?",a:"Ein großer Teil der Zellen kommt heute aus China, das ist eine Abhängigkeit. In Europa entstehen aber neue Fabriken, und Batterien lassen sich zunehmend recyceln.",u:[]},
+{id:"s5",f:"Warum sollen Speicher an den Kraftwerksausschreibungen teilnehmen?",a:"Weil sich im Wettbewerb die günstigste Lösung durchsetzen soll. In der ersten Ausschreibung mussten Anlagen zehn Stunden am Stück laufen können, das schließt Batterien praktisch aus. Erst bei einer späteren, kleineren Ausschreibung 2027 sollen sie mitmachen dürfen. Das ist zu wenig und zu spät.",u:[]}]},
+{id:"bnetza",g:"netz",name:"Dr. Claudia Förster",title:"Abteilungsleiterin Versorgungssicherheit",org:"Bundesbehörde für Energienetze (fiktiv)",vb:"Bundesnetzagentur",
+face:{s:"#f0cdb2",h:"#8c7a6a",st:"side",gl:1,c:"#2c4a7a"},
+st:"Sehr geehrte Abgeordnete, unsere Behörde überwacht die Versorgungssicherheit, genehmigt die Netzentgelte und führt die Ausschreibungen für neue Kraftwerke durch. Wir vertreten keine Branche. Die Stromversorgung in Deutschland gehört zu den zuverlässigsten der Welt. Damit das so bleibt, müssen Netzausbau und Kraftwerksbau zeitlich zusammenpassen, und bis Anfang der 2030er-Jahre brauchen wir neue steuerbare Kraftwerke. Jede Maßnahme kostet Geld, das am Ende Verbraucher und Unternehmen bezahlen. Deshalb müssen die Kosten fair verteilt werden.",
+q:[
+{id:"b1",f:"Droht ein Blackout, wenn Kohlekraftwerke abgeschaltet werden?",a:"Nein, wenn wir rechtzeitig handeln. Bevor ein Kraftwerk vom Netz geht, prüfen die Netzbetreiber, ob es für die Stabilität gebraucht wird. Wenn ja, bleibt es in der Reserve. Haushalte haben bei uns im Schnitt nur wenige Minuten Stromausfall pro Jahr.",u:[]},
+{id:"b2",f:"Welche Kraftwerke kann man schnell hoch- und herunterfahren?",a:"Am schnellsten sind Batteriespeicher, sie reagieren in Sekundenbruchteilen. Eine Gasturbine ist in etwa 10 bis 20 Minuten am Netz, ein Gas-und-Dampf-Kraftwerk in 30 bis 60 Minuten, ein Steinkohlekraftwerk braucht etwa 1 bis 10 Stunden, Braunkohle eher länger. Wind und Sonne kann man in Sekunden abregeln, aber nicht auf Abruf hochfahren.",u:[]},
+{id:"b3",f:"Warum gingen in der ersten Ausschreibung alle Zuschläge an Gaskraftwerke?",a:"Die erste Ausschreibung suchte sogenannte Langzeitkapazitäten: Anlagen, die mindestens zehn Stunden am Stück Strom liefern können. Diese Bedingung hat der Gesetzgeber festgelegt, nicht wir. Weitere Ausschreibungen folgen, an einer davon sollen 2027 auch Batteriespeicher teilnehmen.",u:[]},
+{id:"b4",f:"Was kostet es, wenn Netzbetreiber eingreifen müssen?",a:"Wenn Leitungen überlastet sind, müssen Kraftwerke im Norden heruntergefahren und im Süden hochgefahren werden. Diese Eingriffe kosten jedes Jahr mehrere Milliarden Euro, und sie werden über die Netzentgelte bezahlt.",u:["b4a"]},
+{id:"b4a",l:1,f:"Kommt der Netzausbau schnell genug voran?",a:"Leider nein. Viele große Leitungsprojekte liegen Jahre hinter dem ursprünglichen Zeitplan, unter anderem wegen langer Genehmigungen und Klagen. Das ist einer der wichtigsten Kostentreiber im System.",u:[]},
+{id:"b5",f:"Warum zahlen Menschen in verschiedenen Regionen unterschiedlich viel für das Netz?",a:"Die Netzentgelte hängen von den Kosten des Netzes vor Ort ab. Regionen mit vielen Wind- und Solaranlagen mussten ihr Netz stark ausbauen und hatten deshalb lange höhere Entgelte. Wir arbeiten daran, diese Kosten gerechter zu verteilen.",u:[]},
+{id:"b6",f:"Welche Stromerzeugung ist am günstigsten?",a:"Als Behörde bewerten wir keine Technologien. Für die Kosten pro Kilowattstunde fragen Sie bitte Frau Prof. Kaya. Ich gebe nur zu bedenken: Für die Versorgungssicherheit zählt nicht nur der Preis, sondern auch, ob Strom jederzeit abrufbar ist.",u:[]}]},
+{id:"uenb",g:"netz",name:"Markus Riedel",title:"Technischer Geschäftsführer",org:"Netzgesellschaft Nord-Süd (fiktiv)",vb:"50Hertz, Amprion, TenneT, TransnetBW",
+face:{s:"#e9bf9f",h:"#5a4a3a",st:"bald",gl:1,c:"#2c3e66",tie:"#2f6fb8"},
+st:"Sehr geehrte Abgeordnete, wir betreiben die Stromautobahnen in Deutschland. Unsere Aufgabe ist es, dass in jeder Sekunde genau so viel Strom erzeugt wie verbraucht wird. Der Windstrom entsteht vor allem im Norden, gebraucht wird er auch in den Industriezentren im Süden und Westen. Dafür fehlen Leitungen. Wir fordern: große Nord-Süd-Leitungen wie SuedLink schneller genehmigen und bauen, neue Kraftwerke vor allem im Süden errichten und den Netzausbau verlässlich finanzieren.",
+q:[
+{id:"u1",f:"Was passiert, wenn Leitungen fehlen?",a:"Dann müssen wir im Norden Windräder abregeln und im Süden Kraftwerke hochfahren, damit keine Leitung überlastet wird. Das kostet jedes Jahr Milliarden, und der günstige Windstrom geht verloren.",u:[]},
+{id:"u2",f:"Warum dauert der Bau von Stromleitungen so lange?",a:"Für eine große Leitung braucht man viele Genehmigungen, und gegen viele Abschnitte wird geklagt. Dazu kommen Lieferzeiten für Kabel und Technik. Von der Planung bis zum Betrieb vergehen oft zehn Jahre und mehr.",u:["u2a"]},
+{id:"u2a",l:1,f:"Warum werden die großen Leitungen als Erdkabel gebaut?",a:"Das hat der Gesetzgeber so entschieden, um Proteste gegen Strommasten zu verringern. Erdkabel sind aber deutlich teurer als Freileitungen. Diese Mehrkosten zahlen alle Stromkunden.",u:[]},
+{id:"u3",f:"Was kostet der Netzausbau, und wer bezahlt ihn?",a:"Bis 2045 kostet der Netzausbau mehrere hundert Milliarden Euro. Bezahlt wird er über die Netzentgelte, die auf jeder Stromrechnung stehen. 2026 hat der Bund die Entgelte unserer Netze mit 6,5 Milliarden Euro bezuschusst, ab 2027 sollen es jährlich 5,5 Milliarden sein.",u:["u3a"]},
+{id:"u3a",l:1,f:"Verdienen Sie selbst am Netzausbau?",a:"Wir erhalten auf unsere Investitionen eine Rendite, deren Höhe die Bundesnetzagentur festlegt. Ja, mehr Netzausbau bedeutet für uns auch mehr Einnahmen. Aber ohne angemessene Rendite würde niemand die Milliarden investieren, die nötig sind.",u:[]},
+{id:"u4",f:"Welche Kraftwerke helfen dem Netz am meisten?",a:"Kraftwerke und Speicher, die schnell reagieren und dort stehen, wo viel Strom verbraucht wird. Batterien reagieren in Sekundenbruchteilen, Gasturbinen in 10 bis 20 Minuten, Kohlekraftwerke brauchen Stunden. Für Kosten pro Kilowattstunde fragen Sie bitte Frau Prof. Kaya.",u:[]},
+{id:"u5",f:"Genügen nicht Speicher vor Ort statt neuer Leitungen?",a:"Speicher helfen, weil sie Spitzen abfangen. Sie ersetzen aber keine Leitungen. Eine Batterie kann ein paar Stunden überbrücken, doch der Windstrom aus dem Norden muss trotzdem in den Süden transportiert werden.",u:[]}]},
+{id:"igbce",g:"gew",name:"Andreas Krüger",title:"Vorstandsmitglied",org:"Industriegewerkschaft Energie und Chemie (fiktiv)",vb:"IG BCE",
+face:{s:"#eec3a2",h:"#b8955a",st:"short",stub:1,c:"#8a2f2f"},
+st:"Sehr geehrte Abgeordnete, ich spreche für die Kolleginnen und Kollegen in Tagebauen, Kraftwerken und in der Chemieindustrie. Sie haben jahrzehntelang dafür gesorgt, dass in Deutschland das Licht brennt. Sie verdienen Sicherheit statt Angst vor der Zukunft. Wir fordern: Niemand darf durch den Kohleausstieg ins Bodenlose fallen. Wir brauchen neue, tarifgebundene Industriearbeitsplätze in den Revieren und bezahlbaren Industriestrom, damit unsere Betriebe in Deutschland bleiben.",
+q:[
+{id:"i1",f:"Was fordern Sie konkret für die Beschäftigten in der Kohle?",a:"Umschulungen für Jüngere, ein Anpassungsgeld und faire Vorruhestandsregelungen für Ältere. Und vor allem neue Industriearbeitsplätze vor Ort, damit die jungen Leute nicht wegziehen müssen.",u:[]},
+{id:"i2",f:"Unterstützen Sie den Klimaschutz, oder bremsen Sie ihn?",a:"Wir unterstützen den Klimaschutz. Aber er muss sozial gerecht sein. Wenn Menschen ihre Arbeit verlieren und keine Perspektive haben, verliert die Energiewende ihre Unterstützung.",u:[]},
+{id:"i3",f:"Welche neuen Arbeitsplätze sind in den Revieren bisher entstanden?",a:"Es entstehen Forschungsinstitute, Behörden und einige neue Betriebe. Aber es fehlen gut bezahlte Industriearbeitsplätze mit Tarifvertrag, wie es sie in der Kohle gab.",u:["i3a"]},
+{id:"i3a",l:1,f:"Sind die Jobs in der Wind- und Solarbranche nicht eine Chance?",a:"Doch, eine große. Aber viele dieser Unternehmen haben keinen Tarifvertrag, und wir als Gewerkschaft haben dort weniger Einfluss. Das muss sich ändern.",u:[]},
+{id:"i4",f:"Gehen viele Kohlebeschäftigte nicht ohnehin bald in Rente?",a:"Ein großer Teil ja, das stimmt. Aber es geht nicht nur um sie, sondern um die Zukunft der Regionen und um die Ausbildungsplätze für die nächste Generation.",u:[]},
+{id:"i5",f:"Warum braucht die Chemieindustrie günstigen Strom?",a:"Chemiebetriebe brauchen riesige Mengen Strom. Der vergünstigte Industriestrompreis gilt nur von 2026 bis 2028. Wenn danach die Preise wieder steigen, wandern Werke ins Ausland ab, und mit ihnen Tausende Arbeitsplätze.",u:[]},
+{id:"i6",f:"Was kostet Strom aus Kohle, Gas oder Wind?",a:KAYA,u:[]}]},
+{id:"verdi",g:"gew",name:"Fatma Yıldız",title:"Bundesfachgruppenleiterin Energie",org:"Dienstleistungsgewerkschaft Daseinsvorsorge (fiktiv)",vb:"ver.di",
+face:{s:"#c98f66",h:"#231a16",st:"curlyLong",c:"#c0392b"},
+st:"Sehr geehrte Abgeordnete, wir vertreten die Beschäftigten bei Stadtwerken, Energieversorgern und Netzbetreibern, und wir setzen uns für Menschen mit kleinen Einkommen ein. Strom ist ein Grundbedürfnis. Wer wenig verdient, gibt einen größeren Teil seines Einkommens für Energie aus. Wir fordern: Die Stromsteuer muss für alle sinken, nicht nur für Unternehmen. Die Energieversorgung gehört zur öffentlichen Daseinsvorsorge, und auch in der Wind-, Solar- und Speicherbranche braucht es gute Arbeit mit Tarifvertrag.",
+q:[
+{id:"v1",f:"Wer soll die Senkung der Stromsteuer bezahlen?",a:"Die Senkung würde aus dem Bundeshaushalt finanziert. Für Unternehmen ist sie seit 2026 ja auch möglich. Es ist eine Frage der Gerechtigkeit, dass private Haushalte genauso entlastet werden.",u:["v1a"]},
+{id:"v1a",l:1,f:"Fehlt das Geld dann nicht an anderer Stelle?",a:"Natürlich kostet das Geld, und wir haben dafür keine fertige Gegenfinanzierung vorgelegt. Wir meinen aber: Bezahlbare Energie ist genauso wichtig wie andere Ausgaben des Staates.",u:[]},
+{id:"v2",f:"Warum fehlen Fachkräfte in der Energiewirtschaft?",a:"Für den Netzausbau, für Wärmepumpen und Solaranlagen werden Tausende Elektrikerinnen, Technikerinnen und Ingenieure gebraucht. Viele Betriebe zahlen zu wenig. Gute Löhne und Tarifverträge machen diese Berufe attraktiv.",u:[]},
+{id:"v3",f:"Sind Stadtwerke wirklich besser als private Anbieter?",a:"Stadtwerke investieren vor Ort, sichern Arbeitsplätze in der Region und ihre Gewinne fließen an die Kommune zurück.",u:["v3a"]},
+{id:"v3a",l:1,f:"Betreiben nicht auch viele Stadtwerke Kohle- und Gaskraftwerke?",a:"Ja, das stimmt. Viele Stadtwerke haben noch eigene Kohle- oder Gaskraftwerke und verdienen daran. Auch sie müssen umsteuern, und dabei wollen wir die Beschäftigten mitnehmen.",u:[]},
+{id:"v4",f:"Machen höhere Löhne die Energiewende nicht noch teurer?",a:"Ohne Fachkräfte gibt es keine Energiewende. Wer zu wenig zahlt, findet niemanden, und dann verzögern sich Projekte, was am Ende viel teurer ist.",u:[]},
+{id:"v5",f:"Welcher Strom ist am günstigsten?",a:KAYA,u:[]}]},
+{id:"vzbv",g:"vb",name:"Lena Hoffmann",title:"Leiterin Team Energie",org:"Bundesverband der Verbraucherberatung (fiktiv)",vb:"Verbraucherzentrale Bundesverband",
+face:{s:"#f4d5bd",h:"#a2502a",st:"pony",c:"#d9822b"},
+st:"Sehr geehrte Abgeordnete, deutsche Haushalte zahlen mit die höchsten Strompreise in Europa. Die Bundesregierung hatte angekündigt, die Stromsteuer für alle zu senken. Gesenkt wurde sie 2026 aber nur für Unternehmen und die Landwirtschaft. Wir fordern: Stromsteuer für alle auf das europäische Mindestmaß senken, Umlagen senken und sicherstellen, dass Entlastungen wirklich bei den Kundinnen und Kunden ankommen. Wer Wärmepumpe und E-Auto nutzen soll, braucht bezahlbaren Strom.",
+q:[
+{id:"z1",f:"Kommen die Entlastungen von 2026 bei den Haushalten an?",a:"Nur teilweise. Der Bund hat die Netzentgelte 2026 mit 6,5 Milliarden Euro bezuschusst, angestrebt war eine Entlastung von rund 100 Euro pro Haushalt. Wie viel tatsächlich ankommt, hängt vom Wohnort und vom Stromanbieter ab, denn die Anbieter sind nicht verpflichtet, alles weiterzugeben.",u:[]},
+{id:"z2",f:"Woher soll das Geld für eine niedrigere Stromsteuer kommen?",a:"Aus dem Bundeshaushalt, so wie bei der Entlastung der Unternehmen auch.",u:["z2a"]},
+{id:"z2a",l:1,f:"Zahlen das am Ende nicht doch wieder die Verbraucher als Steuerzahler?",a:"Ja, im Grunde schon. Aber über Steuern werden die Kosten gerechter verteilt als über den Strompreis, weil Menschen mit höherem Einkommen mehr beitragen.",u:[]},
+{id:"z3",f:"Was können Haushalte selbst tun, um Stromkosten zu senken?",a:"Viele Haushalte könnten sofort sparen, wenn sie den Anbieter wechseln oder einen flexiblen Tarif nutzen, der günstigen Strom bei viel Wind und Sonne weitergibt. Leider tun das viele nicht, oft weil es zu kompliziert wirkt.",u:[]},
+{id:"z4",f:"Ist es nicht wichtiger, Industriearbeitsplätze zu sichern?",a:"Beides ist wichtig. Aber es ist nicht gerecht, wenn Unternehmen von Steuern und Umlagen befreit werden und die Haushalte die Kosten tragen. Die Lasten müssen fair verteilt werden.",u:[]},
+{id:"z5",f:"Welche Kraftwerke sind für Verbraucher am günstigsten?",a:"Genaue Kosten pro Kilowattstunde nennt Ihnen besser Frau Prof. Kaya. Für Verbraucher zählt der Endpreis, und der besteht zu einem großen Teil aus Netzentgelten, Steuern und Umlagen, nicht nur aus den Erzeugungskosten.",u:[]}]},
+{id:"ind",g:"wei",name:"Dr. Henrik Vogt",title:"Bereichsleiter Energie und Klima",org:"Verband der energieintensiven Industrien (fiktiv)",vb:"BDI, VCI",
+face:{s:"#eec7a8",h:"#2e2a28",st:"side",c:"#2b2f3a",tie:"#7b5ea7"},
+st:"Sehr geehrte Abgeordnete, Chemie, Stahl und Glas sind das Rückgrat des Industriestandorts Deutschland. Unsere Unternehmen brauchen enorme Mengen Strom, und sie stehen im Wettbewerb mit den USA und China, wo Strom deutlich günstiger ist. Der Industriestrompreis für 2026 bis 2028 hilft, aber er läuft aus. Wir fordern: dauerhaft wettbewerbsfähige Strompreise, kein Abschalten von Kraftwerken ohne gesicherten Ersatz und schnellere Genehmigungen. Sonst wandern Produktion und Arbeitsplätze ab, und die Emissionen entstehen einfach woanders.",
+q:[
+{id:"n1",f:"Warum ist Versorgungssicherheit für Ihre Betriebe so wichtig?",a:"Schon eine kurze Stromunterbrechung kann in einer Chemieanlage Schäden in Millionenhöhe verursachen, weil laufende Prozesse nicht einfach angehalten werden können. Deshalb brauchen wir jederzeit verlässlichen Strom.",u:[]},
+{id:"n2",f:"Warum sollen Haushalte mehr zahlen als Ihre Unternehmen?",a:"Wir stehen im internationalen Wettbewerb, ein Privathaushalt nicht. Wenn Unternehmen abwandern, verlieren alle.",u:["n2a"]},
+{id:"n2a",l:1,f:"Sind viele Unternehmen nicht schon von Umlagen und Netzentgelten befreit?",a:"Ja, viele energieintensive Unternehmen zahlen geringere Umlagen und Netzentgelte. Diese Kosten tragen dann die übrigen Stromkunden. Ohne diese Regeln wären viele Werke aber schon heute nicht mehr wettbewerbsfähig.",u:[]},
+{id:"n3",f:"Wie viele Arbeitsplätze sind wegen der Strompreise schon verloren gegangen?",a:"Eine genaue Zahl kann ich Ihnen nicht nennen. Aber mehrere Unternehmen haben Investitionen ins Ausland verlagert.",u:["n3a"]},
+{id:"n3a",l:1,f:"Waren diese Investitionen im Ausland nicht schon lange geplant?",a:"Bei manchen Unternehmen waren solche Pläne tatsächlich schon älter, und die Strompreise sind nicht der einzige Grund. Aber hohe Energiekosten machen die Entscheidung für Deutschland schwerer.",u:[]},
+{id:"n4",f:"Was tun Ihre Unternehmen selbst für den Klimaschutz?",a:"Viele investieren in effizientere Anlagen, stellen Prozesse auf Strom um und planen den Einsatz von Wasserstoff. Dafür brauchen sie aber günstigen Strom, sonst rechnet sich der Umbau nicht.",u:[]},
+{id:"n5",f:"Welche Kraftwerke liefern den günstigsten Strom?",a:KAYA+" Für uns zählt am Ende, dass Strom jederzeit verfügbar und bezahlbar ist.",u:[]}]},
+{id:"wiss",g:"wei",name:"Prof. Dr. Miriam Kaya",title:"Professorin für Energiesystemanalyse",org:"Institut für Energiesystemforschung (fiktiv)",vb:"Fraunhofer ISE, DIW, EWI Köln",
+face:{s:"#d7a07a",h:"#2a1d18",st:"long",gl:1,c:"#5b4a7a"},
+st:"Sehr geehrte Abgeordnete, ich vertrete keine Branche, sondern möchte Ihnen helfen, die Zahlen einzuordnen. Ein Stromsystem mit sehr viel Wind und Sonne ist technisch machbar. Es braucht aber zusätzlich Netze, Speicher, flexible Verbraucher und Kraftwerke für windstille Zeiten. Jede Technik hat Kosten und Risiken, eine Lösung ohne Nachteile gibt es nicht. Ich empfehle, Entscheidungen auf Grundlage der Gesamtkosten des Systems zu treffen und Ausschreibungen technologieoffen zu gestalten, damit sich die günstigste Lösung durchsetzt.",
+q:[
+{id:"w1",f:"Was kostet eine Kilowattstunde aus den verschiedenen Kraftwerken?",a:"Die Stromgestehungskosten neuer Anlagen liegen laut Fraunhofer ISE (2024) bei: Solar-Freifläche 4,1 bis 7,0 Cent pro Kilowattstunde, kleine Dachanlage 6,3 bis 14,4, Wind an Land 4,3 bis 9,2, Wind auf See 5,5 bis 10,3, Solar mit Batterie 6,0 bis 22,5, Gas-und-Dampf-Kraftwerk 10,9 bis 18,1, Gasturbine 15,4 bis 32,6, Braunkohle 15,1 bis 25,7, Steinkohle 17,3 bis 29,3, Biogas 20,2 bis 32,5 und Kernkraft 13,6 bis 49,0 Cent.",u:["w1a"]},
+{id:"w1a",l:1,f:"Was genau bedeuten diese Stromgestehungskosten?",a:"Sie geben an, was eine Kilowattstunde aus einer neu gebauten Anlage über ihre ganze Lebensdauer im Durchschnitt kostet: Bau, Betrieb, Brennstoff und CO2-Preis. Nicht enthalten sind Netze, Speicher, Reservekraftwerke, Steuern und Umlagen. Billig pro Kilowattstunde heißt deshalb nicht automatisch billig für das ganze System.",u:[]},
+{id:"w2",f:"Wie viel CO2 entsteht pro Kilowattstunde?",a:"Über den ganzen Lebenszyklus gerechnet, ungefähr: Braunkohle 1.000 bis 1.100 Gramm CO2 pro Kilowattstunde, Steinkohle 850 bis 900, Erdgas 400 bis 460, Biogas 300 bis 350, Solar 30 bis 60, Wind 10 bis 20 und Wasserkraft wenige Gramm. Die genauen Werte schwanken je nach Studie.",u:[]},
+{id:"w3",f:"Was sind Umweltkosten, und wie hoch sind sie?",a:"Umweltkosten sind Schäden durch Klimawandel und Luftverschmutzung, die nicht im Strompreis stecken, sondern von der Allgemeinheit getragen werden. Das Umweltbundesamt beziffert sie 2026 auf rund 40 Cent pro Kilowattstunde bei Braunkohle, 34 Cent bei Steinkohle, 16 Cent bei Erdgas, 2,7 Cent bei Solar und unter 1 Cent bei Wind.",u:[]},
+{id:"w4",f:"Welche Kraftwerke sind flexibel, welche träge?",a:"Batterien reagieren in Sekundenbruchteilen, speichern aber meist nur 1 bis 4 Stunden. Eine Gasturbine ist in 10 bis 20 Minuten am Netz, ein Gas-und-Dampf-Kraftwerk in 30 bis 60 Minuten. Steinkohle braucht für einen Kaltstart 1 bis 10 Stunden, Braunkohle eher länger. Wind und Sonne sind wetterabhängig, man kann sie abregeln, aber nicht auf Abruf hochfahren.",u:[]},
+{id:"w5",f:"Ist Strom aus Wind und Sonne für das Gesamtsystem wirklich am günstigsten?",a:"Pro Kilowattstunde ja, mit deutlichem Abstand. Dazu kommen aber Kosten für Netze, Speicher und Reservekraftwerke. Fossile Kraftwerke verursachen dafür hohe Klimakosten. Die meisten Studien kommen zu dem Ergebnis, dass ein System mit viel Wind und Sonne plus Absicherung langfristig günstiger ist, aber die Höhe der Zusatzkosten ist umstritten.",u:[]},
+{id:"w6",f:"Welche Lösung würden Sie dem Parlament konkret empfehlen?",a:"Die Abwägung ist Ihre Aufgabe, nicht meine. Ich kann Ihnen Optionen nennen: schneller Netzausbau, Speicher und Gaskraftwerke im Wettbewerb ausschreiben und den CO2-Preis als wirksamstes Klimaschutzinstrument nutzen. Jede Option hat Kosten, die Sie gegen Versorgungssicherheit und Klimaschutz abwägen müssen.",u:[]},
+{id:"w7",f:"Warum widersprechen sich Studien so oft?",a:"Weil sie mit unterschiedlichen Annahmen rechnen, etwa zu Gaspreisen, CO2-Preisen oder dem Stromverbrauch der Zukunft.",u:["w7a"]},
+{id:"w7a",l:1,f:"Wer bezahlt eigentlich Ihr Institut und Ihre Studien?",a:"Wir werden zum Teil öffentlich finanziert, zum Teil über Aufträge. Manche Studien in unserem Fach werden von Verbänden oder Unternehmen bezahlt. Deshalb sollten Sie bei jeder Studie fragen, wer sie in Auftrag gegeben hat und mit welchen Annahmen gerechnet wurde.",u:[]}]},
+{id:"umw",g:"wei",name:"Paul Steiner",title:"Leiter Klimapolitik",org:"Bund für Natur und Klima (fiktiv)",vb:"BUND, NABU",
+face:{s:"#e6b895",h:"#7a5232",st:"curly",beard:1,c:"#4e7a3a"},
+st:"Sehr geehrte Abgeordnete, Deutschland hat sich gesetzlich verpflichtet, bis 2045 klimaneutral zu werden. Doch nach einer Prognose von Agora Energiewende verfehlen wir 2026 wahrscheinlich erstmals unser Klimaziel. Die Folgen des Klimawandels, Dürren und Hochwasser, kosten schon heute Milliarden. Wir fordern: den Kohleausstieg nicht verschieben, sondern vorziehen, keine neuen fossilen Gaskraftwerke ohne verbindlichen Plan für den Umstieg auf Wasserstoff und einen naturverträglichen Ausbau der erneuerbaren Energien.",
+q:[
+{id:"m1",f:"Wie viel CO2 verursacht Strom aus Kohle, Gas, Wind und Sonne?",a:"Über den Lebenszyklus gerechnet etwa 1.000 bis 1.100 Gramm pro Kilowattstunde bei Braunkohle, 850 bis 900 bei Steinkohle, 400 bis 460 bei Erdgas, aber nur 30 bis 60 bei Solar und 10 bis 20 bei Wind. Kohle ist mit Abstand der größte Klimakiller.",u:[]},
+{id:"m2",f:"Was kosten die Klimaschäden der Stromerzeugung?",a:"Das Umweltbundesamt beziffert die Umweltkosten auf rund 40 Cent pro Kilowattstunde bei Braunkohle, 34 Cent bei Steinkohle und 16 Cent bei Erdgas. Bei Wind ist es weniger als 1 Cent. Diese Kosten zahlen nicht die Kraftwerksbetreiber, sondern wir alle und die nächsten Generationen. Dabei sind neue Wind- und Solaranlagen laut Fraunhofer ISE mit 4 bis 9 Cent pro Kilowattstunde schon heute die günstigsten Kraftwerke.",u:[]},
+{id:"m3",f:"Wie wollen Sie die Versorgung ohne Kohle sichern?",a:"Mit viel mehr Wind und Sonne, mit Speichern, flexiblen Verbrauchern, einem besseren europäischen Stromverbund und Biogas.",u:["m3a"]},
+{id:"m3a",l:1,f:"Lehnen Sie neue Gaskraftwerke also grundsätzlich ab?",a:"Nicht grundsätzlich. Für Dunkelflauten wird eine gewisse Reserve gebraucht, das bestreiten wir nicht. Aber sie muss klein bleiben, nur selten laufen und verbindlich auf grünen Wasserstoff umgestellt werden.",u:[]},
+{id:"m4",f:"Klimaschutz oder Naturschutz – was gilt, wenn beides kollidiert?",a:"Beides gehört zusammen. Windräder gehören nicht in Schutzgebiete, und auf seltene Arten muss Rücksicht genommen werden.",u:["m4a"]},
+{id:"m4a",l:1,f:"Klagt Ihr Verband nicht selbst manchmal gegen Windparks und Stromtrassen?",a:"Ja, in Einzelfällen, wenn seltene Tierarten oder Schutzgebiete bedroht sind. Das kann Projekte verzögern, das gebe ich zu. Gute Planung von Anfang an würde solche Klagen meist überflüssig machen.",u:[]},
+{id:"m5",f:"Wird der Strom durch einen schnelleren Kohleausstieg nicht teurer?",a:"Kurzfristig könnten die Preise steigen, das ist möglich. Langfristig ist jedes Jahr Kohle teurer, wenn man die Klimaschäden mitrechnet.",u:[]},
+{id:"m6",f:"Was sagen Sie den Beschäftigten in der Lausitz?",a:"Dass sie eine sichere Perspektive verdienen. Der Staat muss neue Arbeitsplätze in den Regionen fördern, etwa in der Speicher- und Wasserstoffindustrie. Klimaschutz darf nicht auf ihrem Rücken ausgetragen werden.",u:[]}]},
+{id:"bi",g:"wei",name:"Gerda Lindner",title:"Sprecherin",org:"Bürgerinitiative Gegenwind Hohenfelde (fiktiv)",vb:"lokale Initiativen gegen Windparks und Trassen",
+face:{s:"#f1cfb5",h:"#e4e1db",st:"curly",age:1,c:"#7a5a8a"},
+st:"Sehr geehrte Abgeordnete, ich komme aus Hohenfelde, einem Dorf mit 800 Einwohnern. Neben unserem Ort sollen zehn Windräder gebaut werden, dazu eine neue Stromtrasse. Wir sind nicht gegen die Energiewende. Aber wir haben das Gefühl, dass über unsere Köpfe hinweg entschieden wird. Die Lasten tragen wir auf dem Land, den Nutzen haben die Städte und die Unternehmen. Wir fordern: größere Abstände zu den Häusern, mehr Mitsprache und, wenn gebaut wird, dass unser Dorf auch etwas davon hat.",
+q:[
+{id:"l1",f:"Was stört Sie konkret an dem Windpark?",a:"Die Anlagen sind über 200 Meter hoch, man sieht sie von jedem Fenster aus. Viele haben Angst vor Geräuschen und davor, dass ihre Häuser an Wert verlieren. Und niemand hat uns vorher richtig gefragt.",u:[]},
+{id:"l2",f:"Wo sollen die Windräder denn sonst stehen?",a:"Das ist eine berechtigte Frage. Vielleicht weiter weg von Wohnhäusern, an Autobahnen oder in Industriegebieten. Wir wollen nicht, dass immer dieselben Dörfer die ganze Last tragen.",u:[]},
+{id:"l3",f:"Würden Sie zustimmen, wenn Ihre Gemeinde am Gewinn beteiligt wird?",a:"Das würde vieles ändern. Wenn das Dorf Geld für die Schule oder günstigeren Strom bekommt, wären sicher viele eher einverstanden.",u:[]},
+{id:"l4",f:"Sprechen Sie für die Mehrheit im Dorf?",a:"Wir haben über 150 Unterschriften gesammelt, das ist ein großer Teil des Dorfes.",u:["l4a"]},
+{id:"l4a",l:1,f:"Lehnen manche Ihrer Mitglieder Windkraft nicht grundsätzlich ab?",a:"Ja, das muss ich zugeben. Einige wollen gar keine Windräder, egal wo und wie. Die meisten von uns wollen aber einfach mitreden und fair behandelt werden.",u:["l4b"]},
+{id:"l4b",l:1,f:"Wie steht eigentlich Ihr Gemeinderat zu dem Projekt?",a:"Der Gemeinderat hat dem Projekt zugestimmt. Die Gemeinde braucht die Einnahmen aus Pacht und Gewerbesteuer, die Kasse ist leer. Das hat viele bei uns enttäuscht.",u:[]},
+{id:"l5",f:"Ist Windstrom nicht viel günstiger als Kohlestrom?",a:"Das mag sein, ich bin keine Expertin für Zahlen. Fragen Sie dazu bitte Frau Prof. Kaya. Mir geht es darum, wie es den Menschen vor Ort geht.",u:[]}]}
+];
+/* ---------- Porträts ---------- */
+let fid=0;
+const circ=(a,H)=>a.map(([x,y,r])=>`<circle cx="${x}" cy="${y}" r="${r}" fill="${H}"/>`).join("");
+function face(e,px){
+  const f=e.face,H=f.h,S=f.s,id="cp"+(++fid);let back="",front="";
+  const fr="M32,42 Q32,22 50,21 Q68,22 68,42 Q62,28 50,28 Q38,28 32,42Z";
+  switch(f.st){
+    case"short":front=`<path d="M32,42 Q31,21 50,20 Q69,21 68,42 Q64,30 50,30 Q38,30 32,42Z" fill="${H}"/>`;break;
+    case"side":front=`<path d="M32,44 Q30,19 52,19 Q71,21 68,44 Q66,31 58,28 Q46,34 33,35Z" fill="${H}"/>`;break;
+    case"messy":front=`<path d="M31,42 Q28,17 50,18 Q72,17 69,42 Q66,28 60,31 Q55,24 49,31 Q42,25 37,32Z" fill="${H}"/>`;break;
+    case"bald":front=`<path d="M32,50 Q30,38 35,33 L37,47Z M68,50 Q70,38 65,33 L63,47Z" fill="${H}"/>`;break;
+    case"bob":back=`<path d="M28,48 Q26,17 50,17 Q74,17 72,48 L72,63 Q66,65 64,59 L36,59 Q34,65 28,63Z" fill="${H}"/>`;front=`<path d="M32,40 Q33,21 50,20 Q67,21 68,40 Q60,30 50,32 Q40,30 32,40Z" fill="${H}"/>`;break;
+    case"long":back=`<path d="M28,46 Q26,17 50,17 Q74,17 72,46 L74,82 Q62,76 60,62 L40,62 Q38,76 26,82Z" fill="${H}"/>`;front=`<path d="M32,44 Q32,19 50,19 Q68,19 68,44 Q62,27 52,25 Q44,32 32,44Z" fill="${H}"/>`;break;
+    case"bun":back=`<circle cx="50" cy="16" r="8" fill="${H}"/>`;front=`<path d="${fr}" fill="${H}"/>`;break;
+    case"pony":back=`<ellipse cx="71" cy="38" rx="6" ry="12" fill="${H}" transform="rotate(18 71 38)"/>`;front=`<path d="${fr}" fill="${H}"/>`;break;
+    case"curly":front=circ([[34,38,6],[37,30,7],[44,24,7],[52,23,7],[60,25,7],[65,31,6],[67,39,5],[33,45,4],[67,46,4]],H);break;
+    case"curlyLong":back=circ([[30,40,10],[28,55,10],[30,68,9],[70,40,10],[72,55,10],[70,68,9],[36,24,10],[50,18,11],[64,24,10]],H);front=circ([[36,32,7],[44,26,7],[52,25,7],[60,28,7],[65,35,6]],H);break}
+  const jaw="M33,46 Q34,69 50,68 Q66,69 67,46 Q64,59 50,61 Q36,59 33,46Z";
+  const brow=(H==="#e4e1db"||H==="#9b9b9b")?"#7a7570":H;
+  return `<svg viewBox="0 0 100 100" width="${px}" height="${px}" aria-hidden="true" focusable="false"><defs><clipPath id="${id}"><circle cx="50" cy="50" r="50"/></clipPath></defs><g clip-path="url(#${id})">
+<rect width="100" height="100" fill="${GROUPS[e.g][2]}" opacity=".22"/>${back}
+<path d="M16,100 C16,79 31,71 50,71 C69,71 84,79 84,100Z" fill="${f.c}"/>
+<rect x="43" y="58" width="14" height="14" rx="4" fill="${S}"/>
+<path d="M43,71 L50,83 L57,71Z" fill="#f4f4f2"/>${f.tie?`<path d="M48.5,74 L51.5,74 L53,90 L50,94 L47,90Z" fill="${f.tie}"/>`:""}
+<ellipse cx="33" cy="46" rx="3.2" ry="5" fill="${S}"/><ellipse cx="67" cy="46" rx="3.2" ry="5" fill="${S}"/>
+<ellipse cx="50" cy="44" rx="17" ry="21" fill="${S}"/>
+${f.beard?`<path d="${jaw}" fill="${H}"/>`:""}${f.stub?`<path d="${jaw}" fill="${H}" opacity=".3"/>`:""}
+${front}
+<path d="M39,39.5 Q43,37.5 47,39.5 M53,39.5 Q57,37.5 61,39.5" stroke="${brow}" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+<circle cx="43" cy="45" r="1.9" fill="#2a1f1a"/><circle cx="57" cy="45" r="1.9" fill="#2a1f1a"/>
+${f.age?`<path d="M40,49 Q43,50.5 46,49 M54,49 Q57,50.5 60,49" stroke="#b98a6e" stroke-width=".9" fill="none"/>`:""}
+<path d="M50,46 Q48,51 50.5,51.5" stroke="#b98a6e" stroke-width="1.3" fill="none" stroke-linecap="round"/>
+${f.must?`<path d="M44,54.5 Q50,52 56,54.5 Q50,56.5 44,54.5Z" fill="${H}"/>`:""}
+<path d="M45,55.5 Q50,59 55,55.5" stroke="#3a2a22" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+${f.gl?`<g stroke="#2a2a30" stroke-width="1.5" fill="none"><circle cx="43" cy="45" r="5.2"/><circle cx="57" cy="45" r="5.2"/><path d="M48.2,45 L51.8,45 M37.8,44 L33.5,43 M62.2,44 L66.5,43"/></g>`:""}
+</g></svg>`}
+/* ---------- Zustand ---------- */
+const $=id=>document.getElementById(id);
+const store={get(k){try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+const S=store.get("anh-offline")||{asked:{},notes:{},cur:"kohle"};
+S.asked=S.asked||{};S.notes=S.notes||{};
+let cur=E.find(e=>e.id===S.cur)||E[0];let fresh=new Set();
+const save=()=>{S.cur=cur.id;store.set("anh-offline",S)};
+const asked=e=>S.asked[e.id]||[];
+function unlocked(e){const u=new Set();const a=asked(e);for(const q of e.q)if(a.includes(q.id))(q.u||[]).forEach(x=>u.add(x));return u}
+const qById=(e,id)=>e.q.find(q=>q.id===id);
+/* ---------- Darstellung ---------- */
+function renderBank(){
+  const box=$("groups");box.textContent="";
+  for(const [g,[label,c]] of Object.entries(GROUPS)){
+    const sec=document.createElement("div");sec.className="grp";
+    const h=document.createElement("h3");const d=document.createElement("span");d.className="dot";d.style.background=c;h.append(d,label);
+    const grid=document.createElement("div");grid.className="cards";
+    E.filter(e=>e.g===g).forEach(e=>{
+      const b=document.createElement("button");b.className="card";b.type="button";b.style.setProperty("--c",c);b.setAttribute("aria-pressed",e===cur);
+      const av=document.createElement("div");av.className="av";av.innerHTML=face(e,52);
+      const tx=document.createElement("div");tx.className="tx";
+      const n=document.createElement("b");n.textContent=e.name;const s=document.createElement("span");s.textContent=e.org;tx.append(n,s);b.append(av,tx);
+      const cnt=asked(e).filter(x=>x!=="st").length;
+      if(cnt){const k=document.createElement("i");k.className="n";k.textContent=cnt+(cnt===1?" Frage":" Fragen");b.append(k)}
+      b.onclick=()=>{cur=e;fresh=new Set();save();renderBank();renderHear();if(innerWidth<=860)$("hear").scrollIntoView({behavior:"smooth"})};
+      grid.append(b)});
+    sec.append(h,grid);box.append(sec)}
+}
+function renderHear(){
+  const e=cur,w=$("who");w.textContent="";
+  const pic=document.createElement("div");pic.className="pic";pic.innerHTML=face(e,96);
+  const info=document.createElement("div");
+  const r=document.createElement("p");r.className="role";r.textContent=GROUPS[e.g][0]+" · "+e.title;
+  const h=document.createElement("h2");h.textContent=e.name;
+  const o=document.createElement("p");o.textContent=e.org;
+  const v=document.createElement("p");v.className="vb";v.textContent="Angelehnt an: "+e.vb;
+  info.append(r,h,o,v);w.append(pic,info);
+  $("note").value=S.notes[e.id]||"";
+  renderQs();renderLog();
+}
+function renderQs(){
+  const e=cur,a=asked(e),u=unlocked(e),list=$("qlist");list.textContent="";
+  const items=[{id:"st",f:"Bitte tragen Sie Ihr Eingangsstatement vor.",st:1}].concat(e.q.filter(q=>!q.l||u.has(q.id)));
+  items.forEach(q=>{
+    const b=document.createElement("button");b.type="button";b.className="q"+(q.st?" st":"")+(a.includes(q.id)?" done":"")+(fresh.has(q.id)?" fresh":"");
+    const m=document.createElement("span");m.className="m";m.textContent=a.includes(q.id)?"✓":(q.l?"↳":"?");
+    const t=document.createElement("span");
+    if(q.l&&!a.includes(q.id)){const tg=document.createElement("span");tg.className="tag";tg.textContent="Nachfrage möglich";t.append(tg)}
+    t.append(q.f);b.append(m,t);
+    b.onclick=()=>ask(q.id);list.append(b)});
+  const total=e.q.length+1,done=a.length,locked=e.q.filter(q=>q.l&&!u.has(q.id)).length;
+  $("hint").textContent=done+" von "+total+" Fragen gestellt."+(locked?" Es gibt noch "+locked+(locked===1?" verborgene Nachfrage":" verborgene Nachfragen")+". Hakt bei den richtigen Antworten nach.":(done<total?"":" Alle Fragen gestellt."));
+}
+function turnEl(qid,e){
+  const frag=document.createDocumentFragment();
+  const q=qid==="st"?{f:"Bitte tragen Sie Ihr Eingangsstatement vor.",a:e.st}:qById(e,qid);
+  const d1=document.createElement("div");d1.className="turn q1";
+  const s1=document.createElement("span");s1.className="sp";s1.textContent="Abgeordnete/r:";const p1=document.createElement("p");p1.textContent=q.f;d1.append(s1,p1);
+  const d2=document.createElement("div");d2.className="turn a";
+  const m=document.createElement("div");m.className="mini";m.innerHTML=face(e,36);
+  const c=document.createElement("div");const s2=document.createElement("span");s2.className="sp";s2.textContent=e.name+":";s2.style.color=GROUPS[e.g][2];
+  const p2=document.createElement("p");p2.textContent=q.a;c.append(s2,p2);d2.append(m,c);
+  frag.append(d1,d2);return frag}
+function renderLog(){
+  const log=$("log"),a=asked(cur);log.textContent="";
+  if(!a.length){const p=document.createElement("p");p.className="empty";p.textContent="Noch keine Fragen gestellt. Beginnt mit dem Eingangsstatement oder wählt oben eine Frage.";log.append(p);return}
+  a.forEach(id=>log.append(turnEl(id,cur)))}
+function ask(id){
+  const e=cur,a=S.asked[e.id]=asked(e).slice();
+  if(a.includes(id)){$("st").textContent="Diese Frage wurde schon gestellt.";return}
+  const before=unlocked(e);a.push(id);S.asked[e.id]=a;
+  fresh=new Set([...unlocked(e)].filter(x=>!before.has(x)));
+  save();renderQs();renderBank();
+  const log=$("log");if(a.length===1)log.textContent="";
+  const el=turnEl(id,e);const last=el.lastChild;log.append(el);
+  last.scrollIntoView({behavior:"smooth",block:"nearest"});
+  $("st").textContent=fresh.size?"Neue Nachfrage möglich.":"";
+}
+/* ---------- Protokoll ---------- */
+function protocol(e){
+  const a=asked(e);if(!a.length&&!S.notes[e.id])return"";
+  let t="Sachverständige/r: "+e.name+", "+e.title+", "+e.org+"\n\n";
+  a.forEach(id=>{const q=id==="st"?{f:"Eingangsstatement",a:e.st}:qById(e,id);t+="Frage: "+q.f+"\nAntwort: "+q.a+"\n\n"});
+  if(S.notes[e.id])t+="Eigene Notizen: "+S.notes[e.id]+"\n\n";
+  return t}
+const head="Anhörung im Ausschuss für Wirtschaft und Energie – Protokoll\nErstellt am "+new Date().toLocaleDateString("de-DE")+"\n\n";
+function download(name,text){
+  try{const b=new Blob([text],{type:"text/plain;charset=utf-8"});const u=URL.createObjectURL(b);const a=document.createElement("a");a.href=u;a.download=name;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),1000);$("st").textContent="Protokoll heruntergeladen."}
+  catch(err){$("st").textContent="Herunterladen nicht möglich. Nutzt „Protokoll kopieren“."}}
+const slug=s=>s.toLowerCase().replace(/ä/g,"ae").replace(/ö/g,"oe").replace(/ü/g,"ue").replace(/ß/g,"ss").replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"");
+$("dl").onclick=()=>{const t=protocol(cur);if(!t){$("st").textContent="Noch nichts im Protokoll.";return}download("protokoll-"+slug(cur.name)+".txt",head+t)};
+$("all").onclick=()=>{const t=E.map(protocol).filter(Boolean).join("------------------------------\n\n");if(!t){$("st").textContent="Noch nichts im Protokoll.";return}download("protokoll-anhoerung.txt",head+t)};
+$("copy").onclick=async()=>{const t=protocol(cur);if(!t){$("st").textContent="Noch nichts im Protokoll.";return}
+  try{await navigator.clipboard.writeText(head+t);$("st").textContent="Protokoll kopiert."}catch(err){$("st").textContent="Kopieren nicht möglich. Nutzt „Protokoll herunterladen“."}};
+$("reset").onclick=()=>{delete S.asked[cur.id];delete S.notes[cur.id];fresh=new Set();save();renderHear();renderBank();$("st").textContent="Befragung neu begonnen."};
+$("note").addEventListener("input",ev=>{S.notes[cur.id]=ev.target.value;save()});
+renderBank();renderHear();
+}
+</script>
+</body>
+</html>
